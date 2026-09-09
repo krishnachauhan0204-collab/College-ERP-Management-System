@@ -8,7 +8,27 @@ def home():
 
 @app.route("/students")
 def students():
-    return render_template("students.html")
+    import sqlite3
+
+    conn = sqlite3.connect("college.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS students (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            roll_no TEXT,
+            course TEXT,
+            email TEXT
+        )
+    """)
+
+    cursor.execute("SELECT * FROM students")
+    students = cursor.fetchall()
+
+    conn.close()
+
+    return render_template("students.html", students=students)
 
 @app.route("/add-student", methods=["GET", "POST"])
 def add_student():
