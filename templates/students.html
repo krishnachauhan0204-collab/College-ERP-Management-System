@@ -13,15 +13,37 @@
 
     <br>
 
-  <a href="/add-student">
-    <button>Add Student</button>
-</a>
+    <a href="/add-student">
+        <button>Add Student</button>
+    </a>
 
-<button>View Students</button>
-<button>Edit Student</button>
-<button>Delete Student</button> 
+    <h2>Student List</h2>
 
-    <br><br>
+    {% if students %}
+        <table border="1" cellpadding="10">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Roll Number</th>
+                <th>Course</th>
+                <th>Email</th>
+            </tr>
+
+            {% for student in students %}
+            <tr>
+                <td>{{ student[0] }}</td>
+                <td>{{ student[1] }}</td>
+                <td>{{ student[2] }}</td>
+                <td>{{ student[3] }}</td>
+                <td>{{ student[4] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No students added yet.</p>
+    {% endif %}
+
+    <br>
 
     <a href="/">⬅ Back to Dashboard</a>
 
