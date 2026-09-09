@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Student</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <h1>Add Student</h1>
+
+    <form>
+        <p>
+            <label>Student Name:</label><br>
+            <input type="text" name="name">
+        </p>
+
+        <p>
+            <label>Roll Number:</label><br>
+            <input type="text" name="roll_no">
+        </p>
+
+        <p>
+            <label>Course:</label><br>
+            <input type="text" name="course">
+        </p>
+
+        <p>
+            <label>Email:</label><br>
+            <input type="email" name="email">
+        </p>
+
+        <button type="submit">Add Student</button>
+    </form>
+
+    <br>
+
+    <a href="/students">⬅ Back to Student Management</a>
+
+</body>
+</html>
