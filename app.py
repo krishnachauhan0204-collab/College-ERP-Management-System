@@ -124,6 +124,8 @@ def delete_student(id):
 def faculty():
     return render_template("faculty.html")
 
-
+@app.route("/courses")
+def courses():
+    return render_template("courses.html")
 if __name__ == "__main__":
     app.run(debug=True)
