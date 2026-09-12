@@ -127,7 +127,7 @@ def faculty():
 @app.route("/courses")
 def courses():
     return render_template("courses.html")
-    @app.route("/attendance")
+@app.route("/attendance")
 def attendance():
     return render_template("attendance.html")
 if __name__ == "__main__":
