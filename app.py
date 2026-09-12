@@ -142,8 +142,26 @@ def fees():
 
 @app.route("/reports")
 def reports():
-    return render_template("reports.html")
+    import sqlite3
 
+    conn = sqlite3.connect("college.db")
+    cursor = conn.cursor()
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS students (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            roll_no TEXT,
+            course TEXT,
+            email TEXT
+        )
+    """)
+
+    cursor.execute("SELECT * FROM students")
+    students = cursor.fetchall()
+
+    conn.close()
+
+    return render_template("reports.html", students=students)
 if __name__ == "__main__":
     app.run(debug=True)
