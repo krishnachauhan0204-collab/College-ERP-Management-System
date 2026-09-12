@@ -1,7 +1,10 @@
 from flask import Flask, render_template, request, redirect
+import sqlite3
 
 app = Flask(__name__)
 
+
+# ================= HOME =================
 
 @app.route("/")
 def home():
@@ -12,7 +15,6 @@ def home():
 
 @app.route("/students")
 def students():
-    import sqlite3
 
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
@@ -37,13 +39,13 @@ def students():
 
 @app.route("/add-student", methods=["GET", "POST"])
 def add_student():
+
     if request.method == "POST":
+
         name = request.form["name"]
         roll_no = request.form["roll_no"]
         course = request.form["course"]
         email = request.form["email"]
-
-        import sqlite3
 
         conn = sqlite3.connect("college.db")
         cursor = conn.cursor()
@@ -73,12 +75,12 @@ def add_student():
 
 @app.route("/edit-student/<int:id>", methods=["GET", "POST"])
 def edit_student(id):
-    import sqlite3
 
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
 
     if request.method == "POST":
+
         name = request.form["name"]
         roll_no = request.form["roll_no"]
         course = request.form["course"]
@@ -105,7 +107,6 @@ def edit_student(id):
 
 @app.route("/delete-student/<int:id>")
 def delete_student(id):
-    import sqlite3
 
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
@@ -122,7 +123,6 @@ def delete_student(id):
 
 @app.route("/faculty")
 def faculty():
-    import sqlite3
 
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
@@ -143,24 +143,68 @@ def faculty():
 
     return render_template("faculty.html", faculty=faculty)
 
+
+# ================= ADD FACULTY =================
+
+@app.route("/add-faculty", methods=["GET", "POST"])
+def add_faculty():
+
+    if request.method == "POST":
+
+        name = request.form["name"]
+        department = request.form["department"]
+        email = request.form["email"]
+
+        conn = sqlite3.connect("college.db")
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS faculty (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                department TEXT,
+                email TEXT
+            )
+        """)
+
+        cursor.execute("""
+            INSERT INTO faculty (name, department, email)
+            VALUES (?, ?, ?)
+        """, (name, department, email))
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/faculty")
+
+    return render_template("add_faculty.html")
+
+
+# ================= COURSES =================
+
 @app.route("/courses")
 def courses():
     return render_template("courses.html")
 
+
+# ================= ATTENDANCE =================
 
 @app.route("/attendance")
 def attendance():
     return render_template("attendance.html")
 
 
+# ================= FEES =================
+
 @app.route("/fees")
 def fees():
     return render_template("fees.html")
 
 
+# ================= REPORTS =================
+
 @app.route("/reports")
 def reports():
-    import sqlite3
 
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
@@ -181,28 +225,9 @@ def reports():
     conn.close()
 
     return render_template("reports.html", students=students)
+
+
+# ================= RUN =================
+
 if __name__ == "__main__":
     app.run(debug=True)
-@app.route("/add-faculty", methods=["GET", "POST"])
-def add_faculty():
-    import sqlite3
-
-    if request.method == "POST":
-        name = request.form["name"]
-        department = request.form["department"]
-        email = request.form["email"]
-
-        conn = sqlite3.connect("college.db")
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            INSERT INTO faculty (name, department, email)
-            VALUES (?, ?, ?)
-        """, (name, department, email))
-
-        conn.commit()
-        conn.close()
-
-        return redirect("/faculty")
-
-    return render_template("add_faculty.html")
