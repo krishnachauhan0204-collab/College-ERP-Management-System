@@ -122,8 +122,26 @@ def delete_student(id):
 
 @app.route("/faculty")
 def faculty():
-    return render_template("faculty.html")
+    import sqlite3
 
+    conn = sqlite3.connect("college.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS faculty (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            department TEXT,
+            email TEXT
+        )
+    """)
+
+    cursor.execute("SELECT * FROM faculty")
+    faculty = cursor.fetchall()
+
+    conn.close()
+
+    return render_template("faculty.html", faculty=faculty)
 
 @app.route("/courses")
 def courses():
