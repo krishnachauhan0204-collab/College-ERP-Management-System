@@ -30,6 +30,7 @@ def students():
 
     return render_template("students.html", students=students)
 
+
 @app.route("/add-student", methods=["GET", "POST"])
 def add_student():
     if request.method == "POST":
@@ -64,6 +65,7 @@ def add_student():
 
     return render_template("add_student.html")
 
+
 @app.route("/edit-student/<int:id>", methods=["GET", "POST"])
 def edit_student(id):
     import sqlite3
@@ -86,14 +88,14 @@ def edit_student(id):
         conn.commit()
         conn.close()
 
-    return redirect("/students")
+        return redirect("/students")
 
     cursor.execute("SELECT * FROM students WHERE id=?", (id,))
     student = cursor.fetchone()
 
     conn.close()
 
- return render_template("edit_student.html", student=student)
+    return render_template("edit_student.html", student=student)
 
 
 if __name__ == "__main__":
