@@ -183,3 +183,26 @@ def reports():
     return render_template("reports.html", students=students)
 if __name__ == "__main__":
     app.run(debug=True)
+@app.route("/add-faculty", methods=["GET", "POST"])
+def add_faculty():
+    import sqlite3
+
+    if request.method == "POST":
+        name = request.form["name"]
+        department = request.form["department"]
+        email = request.form["email"]
+
+        conn = sqlite3.connect("college.db")
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO faculty (name, department, email)
+            VALUES (?, ?, ?)
+        """, (name, department, email))
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/faculty")
+
+    return render_template("add_faculty.html")
