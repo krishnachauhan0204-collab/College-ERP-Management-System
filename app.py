@@ -86,7 +86,7 @@ def edit_student(id):
         conn.commit()
         conn.close()
 
-        return redirect("/students")
+    return redirect("/students")
 
     cursor.execute("SELECT * FROM students WHERE id=?", (id,))
     student = cursor.fetchone()
