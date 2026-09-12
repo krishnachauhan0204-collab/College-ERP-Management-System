@@ -28,13 +28,6 @@
                 <th>Course</th>
                 <th>Email</th>
                 <th>Action</th>
-                <td>{{student[4]}}</td>
-                <td>
-                    <a href="/edit-student/
-                        {{ student[0]}}">
-                        <button>Edit</button>
-                    </a>a>
-                </td>
             </tr>
 
             {% for student in students %}
@@ -44,6 +37,11 @@
                 <td>{{ student[2] }}</td>
                 <td>{{ student[3] }}</td>
                 <td>{{ student[4] }}</td>
+                <td>
+                    <a href="/edit-student/{{ student[0] }}">
+                        <button>Edit</button>
+                    </a>
+                </td>
             </tr>
             {% endfor %}
         </table>
