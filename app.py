@@ -6,6 +6,7 @@ app = Flask(__name__)
 def home():
     return render_template("index.html")
 
+
 @app.route("/students")
 def students():
     import sqlite3
@@ -96,6 +97,21 @@ def edit_student(id):
     conn.close()
 
     return render_template("edit_student.html", student=student)
+
+
+@app.route("/delete-student/<int:id>")
+def delete_student(id):
+    import sqlite3
+
+    conn = sqlite3.connect("college.db")
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM students WHERE id=?", (id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/students")
 
 
 if __name__ == "__main__":
