@@ -13,23 +13,33 @@
 
     <br>
 
-    <h2>Faculty Records</h2>
+    <a href="/add-faculty">
+        <button>Add Faculty</button>
+    </a>
 
-    <table border="1" cellpadding="10">
-        <tr>
-            <th>ID</th>
-            <th>Faculty Name</th>
-            <th>Department</th>
-            <th>Email</th>
-        </tr>
+    <h2>Faculty List</h2>
 
-        <tr>
-            <td>1</td>
-            <td>Faculty Member</td>
-            <td>Computer Engineering</td>
-            <td>faculty@example.com</td>
-        </tr>
-    </table>
+    {% if faculty %}
+        <table border="1" cellpadding="10">
+            <tr>
+                <th>ID</th>
+                <th>Faculty Name</th>
+                <th>Department</th>
+                <th>Email</th>
+            </tr>
+
+            {% for member in faculty %}
+            <tr>
+                <td>{{ member[0] }}</td>
+                <td>{{ member[1] }}</td>
+                <td>{{ member[2] }}</td>
+                <td>{{ member[3] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No faculty records available.</p>
+    {% endif %}
 
     <br>
 
