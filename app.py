@@ -93,6 +93,8 @@ def edit_student(id):
 
     conn.close()
 
-    return render_template("edit_student.html", student=student)
-    if __name__ == "__main__":
+ return render_template("edit_student.html", student=student)
+
+
+if __name__ == "__main__":
     app.run(debug=True)
