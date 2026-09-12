@@ -124,11 +124,26 @@ def delete_student(id):
 def faculty():
     return render_template("faculty.html")
 
+
 @app.route("/courses")
 def courses():
     return render_template("courses.html")
+
+
 @app.route("/attendance")
 def attendance():
     return render_template("attendance.html")
+
+
+@app.route("/fees")
+def fees():
+    return render_template("fees.html")
+
+
+@app.route("/reports")
+def reports():
+    return render_template("reports.html")
+
+
 if __name__ == "__main__":
     app.run(debug=True)
