@@ -13,30 +13,31 @@
 
     <br>
 
-    <div class="card">
-        <h2>👨‍🎓 Student Report</h2>
-        <p>View student records and details.</p>
-    </div>
+    <h2>👨‍🎓 Student Report</h2>
 
-    <div class="card">
-        <h2>👨‍🏫 Faculty Report</h2>
-        <p>View faculty records and details.</p>
-    </div>
+    {% if students %}
+        <table border="1" cellpadding="10">
+            <tr>
+                <th>ID</th>
+                <th>Student Name</th>
+                <th>Enrollment Number</th>
+                <th>Course</th>
+                <th>Email</th>
+            </tr>
 
-    <div class="card">
-        <h2>📚 Course Report</h2>
-        <p>View available college courses.</p>
-    </div>
-
-    <div class="card">
-        <h2>📝 Attendance Report</h2>
-        <p>View student attendance records.</p>
-    </div>
-
-    <div class="card">
-        <h2>💰 Fees Report</h2>
-        <p>View student fees information.</p>
-    </div>
+            {% for student in students %}
+            <tr>
+                <td>{{ student[0] }}</td>
+                <td>{{ student[1] }}</td>
+                <td>{{ student[2] }}</td>
+                <td>{{ student[3] }}</td>
+                <td>{{ student[4] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No student records available.</p>
+    {% endif %}
 
     <br>
 
