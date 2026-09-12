@@ -27,6 +27,14 @@
                 <th>Enrollment Number</th>
                 <th>Course</th>
                 <th>Email</th>
+                <th>Action</th>
+                <td>{{student[4]}}</td>
+                <td>
+                    <a href="/edit-student/
+                        {{ student[0]}}">
+                        <button>Edit</button>
+                    </a>a>
+                </td>
             </tr>
 
             {% for student in students %}
