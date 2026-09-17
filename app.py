@@ -96,7 +96,6 @@ def add_student():
         conn = sqlite3.connect("college.db")
         cursor = conn.cursor()
 
-        # Automatic Enrollment Number
         cursor.execute("SELECT COUNT(*) FROM students")
         count = cursor.fetchone()[0] + 1
 
@@ -246,14 +245,11 @@ def attendance():
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
 
-    # Selected Branch
     selected_branch = request.args.get("branch", "")
 
-    # Save Attendance
     if request.method == "POST":
 
         attendance_date = str(date.today())
-
         branch = request.form["branch"]
 
         cursor.execute(
@@ -284,14 +280,12 @@ def attendance():
                 ))
 
         conn.commit()
-
         conn.close()
 
         return redirect(
             f"/attendance?branch={branch}"
         )
 
-    # Show students according to branch
     if selected_branch:
 
         cursor.execute("""
@@ -315,6 +309,45 @@ def attendance():
         "attendance.html",
         students=students,
         selected_branch=selected_branch
+    )
+
+
+# ================= ATTENDANCE REPORT =================
+@app.route("/attendance-report")
+def attendance_report():
+
+    init_db()
+
+    conn = sqlite3.connect("college.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            students.id,
+            students.name,
+            students.roll_no,
+            students.course,
+            COUNT(attendance.id),
+            SUM(
+                CASE
+                    WHEN attendance.status='Present'
+                    THEN 1
+                    ELSE 0
+                END
+            )
+        FROM students
+        LEFT JOIN attendance
+        ON students.id = attendance.student_id
+        GROUP BY students.id
+    """)
+
+    records = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "attendance_report.html",
+        records=records
     )
 
 
