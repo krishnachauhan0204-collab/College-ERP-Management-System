@@ -5,7 +5,7 @@ from datetime import date
 app = Flask(__name__)
 
 
-# ================= DATABASE SETUP =================
+# ================= DATABASE =================
 def init_db():
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
@@ -42,7 +42,7 @@ def init_db():
     conn.close()
 
 
-# ================= HOME / SMART DASHBOARD =================
+# ================= DASHBOARD =================
 @app.route("/")
 def home():
     init_db()
@@ -84,15 +84,23 @@ def students():
 # ================= ADD STUDENT =================
 @app.route("/add-student", methods=["GET", "POST"])
 def add_student():
+
+    init_db()
+
     if request.method == "POST":
 
         name = request.form["name"]
-        roll_no = request.form["roll_no"]
         course = request.form["course"]
         email = request.form["email"]
 
         conn = sqlite3.connect("college.db")
         cursor = conn.cursor()
+
+        # Automatic Enrollment Number
+        cursor.execute("SELECT COUNT(*) FROM students")
+        count = cursor.fetchone()[0] + 1
+
+        roll_no = f"ENR{count:03d}"
 
         cursor.execute("""
             INSERT INTO students
@@ -111,6 +119,7 @@ def add_student():
 # ================= EDIT STUDENT =================
 @app.route("/edit-student/<int:id>", methods=["GET", "POST"])
 def edit_student(id):
+
     init_db()
 
     conn = sqlite3.connect("college.db")
@@ -119,15 +128,14 @@ def edit_student(id):
     if request.method == "POST":
 
         name = request.form["name"]
-        roll_no = request.form["roll_no"]
         course = request.form["course"]
         email = request.form["email"]
 
         cursor.execute("""
             UPDATE students
-            SET name=?, roll_no=?, course=?, email=?
+            SET name=?, course=?, email=?
             WHERE id=?
-        """, (name, roll_no, course, email, id))
+        """, (name, course, email, id))
 
         conn.commit()
         conn.close()
@@ -152,12 +160,12 @@ def edit_student(id):
 # ================= DELETE STUDENT =================
 @app.route("/delete-student/<int:id>")
 def delete_student(id):
+
     init_db()
 
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
 
-    # Delete student's attendance also
     cursor.execute(
         "DELETE FROM attendance WHERE student_id=?",
         (id,)
@@ -177,6 +185,7 @@ def delete_student(id):
 # ================= FACULTY =================
 @app.route("/faculty")
 def faculty():
+
     init_db()
 
     conn = sqlite3.connect("college.db")
@@ -196,6 +205,8 @@ def faculty():
 # ================= ADD FACULTY =================
 @app.route("/add-faculty", methods=["GET", "POST"])
 def add_faculty():
+
+    init_db()
 
     if request.method == "POST":
 
@@ -235,12 +246,21 @@ def attendance():
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
 
-    # SAVE ATTENDANCE
+    # Selected Branch
+    selected_branch = request.args.get("branch", "")
+
+    # Save Attendance
     if request.method == "POST":
 
         attendance_date = str(date.today())
 
-        cursor.execute("SELECT id FROM students")
+        branch = request.form["branch"]
+
+        cursor.execute(
+            "SELECT id FROM students WHERE course=?",
+            (branch,)
+        )
+
         students = cursor.fetchall()
 
         for student in students:
@@ -267,13 +287,25 @@ def attendance():
 
         conn.close()
 
-        return redirect("/attendance")
+        return redirect(
+            f"/attendance?branch={branch}"
+        )
 
-    # GET STUDENTS
-    cursor.execute("""
-        SELECT * FROM students
-        ORDER BY id
-    """)
+    # Show students according to branch
+    if selected_branch:
+
+        cursor.execute("""
+            SELECT * FROM students
+            WHERE course=?
+            ORDER BY id
+        """, (selected_branch,))
+
+    else:
+
+        cursor.execute("""
+            SELECT * FROM students
+            ORDER BY id
+        """)
 
     students = cursor.fetchall()
 
@@ -281,46 +313,8 @@ def attendance():
 
     return render_template(
         "attendance.html",
-        students=students
-    )
-
-
-# ================= ATTENDANCE REPORT =================
-@app.route("/attendance-report")
-def attendance_report():
-
-    init_db()
-
-    conn = sqlite3.connect("college.db")
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        SELECT
-            students.id,
-            students.name,
-            students.roll_no,
-            students.course,
-            COUNT(attendance.id) AS total_classes,
-            SUM(
-                CASE
-                    WHEN attendance.status='Present'
-                    THEN 1
-                    ELSE 0
-                END
-            ) AS present_classes
-        FROM students
-        LEFT JOIN attendance
-        ON students.id = attendance.student_id
-        GROUP BY students.id
-    """)
-
-    records = cursor.fetchall()
-
-    conn.close()
-
-    return render_template(
-        "reports.html",
-        records=records
+        students=students,
+        selected_branch=selected_branch
     )
 
 
@@ -340,7 +334,6 @@ def reports():
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM students")
-
     students = cursor.fetchall()
 
     conn.close()
