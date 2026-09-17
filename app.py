@@ -4,11 +4,50 @@ import sqlite3
 app = Flask(__name__)
 
 
-# ================= HOME =================
+# ================= HOME / SMART DASHBOARD =================
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+
+    conn = sqlite3.connect("college.db")
+    cursor = conn.cursor()
+
+    # Students table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS students (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            roll_no TEXT,
+            course TEXT,
+            email TEXT
+        )
+    """)
+
+    # Faculty table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS faculty (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            department TEXT,
+            email TEXT
+        )
+    """)
+
+    # Count students
+    cursor.execute("SELECT COUNT(*) FROM students")
+    total_students = cursor.fetchone()[0]
+
+    # Count faculty
+    cursor.execute("SELECT COUNT(*) FROM faculty")
+    total_faculty = cursor.fetchone()[0]
+
+    conn.close()
+
+    return render_template(
+        "index.html",
+        total_students=total_students,
+        total_faculty=total_faculty
+    )
 
 
 # ================= STUDENTS =================
