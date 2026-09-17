@@ -13,59 +13,116 @@
 
     <br>
 
-    {% if students %}
+    <!-- BRANCH SELECTION -->
 
-    <form method="POST">
+    <form method="GET" action="/attendance">
 
-        <table border="1" cellpadding="10">
+        <label><b>Select Branch:</b></label>
 
-            <tr>
-                <th>ID</th>
-                <th>Student Name</th>
-                <th>Enrollment Number</th>
-                <th>Course / Branch</th>
-                <th>Attendance</th>
-            </tr>
+        <select name="branch" required>
 
-            {% for student in students %}
+            <option value="">-- Select Branch --</option>
 
-            <tr>
-                <td>{{ student[0] }}</td>
-                <td>{{ student[1] }}</td>
-                <td>{{ student[2] }}</td>
-                <td>{{ student[3] }}</td>
+            <option value="Computer Engineering"
+                {% if selected_branch == "Computer Engineering" %}selected{% endif %}>
+                Computer Engineering
+            </option>
 
-                <td>
-                    <label>
-                        <input type="radio"
-                               name="attendance_{{ student[0] }}"
-                               value="Present"
-                               required>
-                        Present
-                    </label>
+            <option value="Information Technology"
+                {% if selected_branch == "Information Technology" %}selected{% endif %}>
+                Information Technology
+            </option>
 
-                    <label>
-                        <input type="radio"
-                               name="attendance_{{ student[0] }}"
-                               value="Absent">
-                        Absent
-                    </label>
-                </td>
-            </tr>
+            <option value="Electrical Engineering"
+                {% if selected_branch == "Electrical Engineering" %}selected{% endif %}>
+                Electrical Engineering
+            </option>
 
-            {% endfor %}
+            <option value="Mechanical Engineering"
+                {% if selected_branch == "Mechanical Engineering" %}selected{% endif %}>
+                Mechanical Engineering
+            </option>
 
-        </table>
+        </select>
 
-        <br>
-
-        <button type="submit">Save Attendance</button>
+        <button type="submit">Show Students</button>
 
     </form>
 
+    <br><br>
+
+    {% if selected_branch %}
+
+        {% if students %}
+
+        <form method="POST" action="/attendance">
+
+            <input type="hidden"
+                   name="branch"
+                   value="{{ selected_branch }}">
+
+            <table border="1" cellpadding="10">
+
+                <tr>
+                    <th>ID</th>
+                    <th>Student Name</th>
+                    <th>Enrollment Number</th>
+                    <th>Course / Branch</th>
+                    <th>Attendance</th>
+                </tr>
+
+                {% for student in students %}
+
+                <tr>
+
+                    <td>{{ student[0] }}</td>
+
+                    <td>{{ student[1] }}</td>
+
+                    <td>{{ student[2] }}</td>
+
+                    <td>{{ student[3] }}</td>
+
+                    <td>
+
+                        <label>
+                            <input type="radio"
+                                   name="attendance_{{ student[0] }}"
+                                   value="Present"
+                                   required>
+                            Present
+                        </label>
+
+                        <label>
+                            <input type="radio"
+                                   name="attendance_{{ student[0] }}"
+                                   value="Absent">
+                            Absent
+                        </label>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+            <br>
+
+            <button type="submit">Save Attendance</button>
+
+        </form>
+
+        {% else %}
+
+            <p>No students found in {{ selected_branch }}.</p>
+
+        {% endif %}
+
     {% else %}
 
-        <p>No students available. Please add students first.</p>
+        <p>Please select a branch to view students.</p>
 
     {% endif %}
 
