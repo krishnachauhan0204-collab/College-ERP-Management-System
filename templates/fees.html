@@ -1,52 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Fees Management</title>
+    <title>College ERP Management System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
-    <h1>Fees Management</h1>
+    <h1>College ERP Management System</h1>
 
-    <p>Manage Student Fees</p>
+    <p>Welcome to College ERP Dashboard</p>
 
-    <br>
+    <!-- SMART DASHBOARD -->
+    <div class="dashboard">
 
-    <h2>Fees Records</h2>
+        <a href="/students" style="text-decoration: none; color: inherit;">
+            <div class="card">
+                <h2>👨‍🎓 Students</h2>
+                <p>Total Students</p>
+                <h2>{{ total_students }}</h2>
+            </div>
+        </a>
 
-    <table border="1" cellpadding="10">
-        <tr>
-            <th>ID</th>
-            <th>Student Name</th>
-            <th>Enrollment Number</th>
-            <th>Course</th>
-            <th>Total Fees</th>
-            <th>Fees Status</th>
-        </tr>
+        <a href="/faculty" style="text-decoration: none; color: inherit;">
+            <div class="card">
+                <h2>👨‍🏫 Faculty</h2>
+                <p>Total Faculty</p>
+                <h2>{{ total_faculty }}</h2>
+            </div>
+        </a>
 
-        <tr>
-            <td>1</td>
-            <td>Student Name</td>
-            <td>ENR001</td>
-            <td>Computer Engineering</td>
-            <td>₹50,000</td>
-            <td>Paid</td>
-        </tr>
+        <a href="/courses" style="text-decoration: none; color: inherit;">
+            <div class="card">
+                <h2>📚 Courses</h2>
+                <p>Manage Courses</p>
+            </div>
+        </a>
 
-        <tr>
-            <td>2</td>
-            <td>Student Name</td>
-            <td>ENR002</td>
-            <td>Computer Engineering</td>
-            <td>₹50,000</td>
-            <td>Pending</td>
-        </tr>
-    </table>
+        <a href="/attendance" style="text-decoration: none; color: inherit;">
+            <div class="card">
+                <h2>📊 Attendance</h2>
+                <p>Manage Attendance</p>
+            </div>
+        </a>
 
-    <br>
+        <a href="/fees" style="text-decoration: none; color: inherit;">
+            <div class="card">
+                <h2>💰 Fees</h2>
+                <p>Manage Student Fees</p>
+            </div>
+        </a>
 
-    <a href="/">⬅ Back to Dashboard</a>
+        <a href="/reports" style="text-decoration: none; color: inherit;">
+            <div class="card">
+                <h2>📄 Reports</h2>
+                <p>View Reports</p>
+            </div>
+        </a>
+
+    </div>
 
 </body>
 </html>
