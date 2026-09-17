@@ -13,22 +13,45 @@
 
         <p>
             <label>Student Name:</label><br>
-            <input type="text" name="name" value="{{ student[1] }}">
+            <input type="text" name="name" value="{{ student[1] }}" required>
         </p>
 
         <p>
             <label>Enrollment Number:</label><br>
-            <input type="text" name="roll_no" value="{{ student[2] }}">
+            <input type="text" value="{{ student[2] }}" disabled>
         </p>
 
         <p>
-            <label>Course:</label><br>
-            <input type="text" name="course" value="{{ student[3] }}">
+            <label>Course / Branch:</label><br>
+
+            <select name="course" required>
+
+                <option value="Computer Engineering"
+                    {% if student[3] == "Computer Engineering" %}selected{% endif %}>
+                    Computer Engineering
+                </option>
+
+                <option value="Information Technology"
+                    {% if student[3] == "Information Technology" %}selected{% endif %}>
+                    Information Technology
+                </option>
+
+                <option value="Electrical Engineering"
+                    {% if student[3] == "Electrical Engineering" %}selected{% endif %}>
+                    Electrical Engineering
+                </option>
+
+                <option value="Mechanical Engineering"
+                    {% if student[3] == "Mechanical Engineering" %}selected{% endif %}>
+                    Mechanical Engineering
+                </option>
+
+            </select>
         </p>
 
         <p>
             <label>Email:</label><br>
-            <input type="email" name="email" value="{{ student[4] }}">
+            <input type="email" name="email" value="{{ student[4] }}" required>
         </p>
 
         <button type="submit">Update Student</button>
