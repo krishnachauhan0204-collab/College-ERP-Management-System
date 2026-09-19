@@ -73,12 +73,20 @@ def students():
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM students")
+    # Enrollment Number પ્રમાણે ascending order
+    cursor.execute("""
+        SELECT * FROM students
+        ORDER BY roll_no ASC
+    """)
+
     students = cursor.fetchall()
 
     conn.close()
 
-    return render_template("students.html", students=students)
+    return render_template(
+        "students.html",
+        students=students
+    )
 
 
 # ================= ADD STUDENT =================
@@ -90,16 +98,12 @@ def add_student():
     if request.method == "POST":
 
         name = request.form["name"]
+        roll_no = request.form["roll_no"]
         course = request.form["course"]
         email = request.form["email"]
 
         conn = sqlite3.connect("college.db")
         cursor = conn.cursor()
-
-        cursor.execute("SELECT COUNT(*) FROM students")
-        count = cursor.fetchone()[0] + 1
-
-        roll_no = f"ENR{count:03d}"
 
         cursor.execute("""
             INSERT INTO students
@@ -127,14 +131,15 @@ def edit_student(id):
     if request.method == "POST":
 
         name = request.form["name"]
+        roll_no = request.form["roll_no"]
         course = request.form["course"]
         email = request.form["email"]
 
         cursor.execute("""
             UPDATE students
-            SET name=?, course=?, email=?
+            SET name=?, roll_no=?, course=?, email=?
             WHERE id=?
-        """, (name, course, email, id))
+        """, (name, roll_no, course, email, id))
 
         conn.commit()
         conn.close()
@@ -291,14 +296,14 @@ def attendance():
         cursor.execute("""
             SELECT * FROM students
             WHERE course=?
-            ORDER BY id
+            ORDER BY roll_no ASC
         """, (selected_branch,))
 
     else:
 
         cursor.execute("""
             SELECT * FROM students
-            ORDER BY id
+            ORDER BY roll_no ASC
         """)
 
     students = cursor.fetchall()
@@ -339,6 +344,7 @@ def attendance_report():
         LEFT JOIN attendance
         ON students.id = attendance.student_id
         GROUP BY students.id
+        ORDER BY students.roll_no ASC
     """)
 
     records = cursor.fetchall()
@@ -366,7 +372,11 @@ def reports():
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM students")
+    cursor.execute("""
+        SELECT * FROM students
+        ORDER BY roll_no ASC
+    """)
+
     students = cursor.fetchall()
 
     conn.close()
