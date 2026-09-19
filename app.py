@@ -5,7 +5,6 @@ import re
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-
 app.secret_key = "college_erp_secret_key"
 
 
@@ -13,25 +12,19 @@ app.secret_key = "college_erp_secret_key"
 def is_strong_password(password):
     if len(password) < 8:
         return False
-
     if not re.search(r"[A-Z]", password):
         return False
-
     if not re.search(r"[a-z]", password):
         return False
-
     if not re.search(r"[0-9]", password):
         return False
-
     if not re.search(r"[^A-Za-z0-9]", password):
         return False
-
     return True
 
 
 # ================= DATABASE =================
 def init_db():
-
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
 
@@ -81,31 +74,22 @@ def init_db():
 def login():
 
     if request.method == "POST":
-
         username = request.form["username"].strip()
         password = request.form["password"]
 
-        # ADMIN
         if username == "admin" and password == "admin123":
-
             session.clear()
             session["logged_in"] = True
             session["user_type"] = "Admin"
-
             return redirect("/admin-dashboard")
 
-        # FACULTY
         elif username == "faculty" and password == "faculty123":
-
             session.clear()
             session["logged_in"] = True
             session["user_type"] = "Faculty"
-
             return redirect("/faculty-dashboard")
 
-        # STUDENT
         else:
-
             init_db()
 
             conn = sqlite3.connect("college.db")
@@ -118,18 +102,14 @@ def login():
             """, (username,))
 
             student = cursor.fetchone()
-
             conn.close()
 
             if student and student[5]:
-
                 if check_password_hash(student[5], password):
-
                     session.clear()
                     session["logged_in"] = True
                     session["user_type"] = "Student"
                     session["student_id"] = student[0]
-
                     return redirect("/student-dashboard")
 
             return render_template(
@@ -143,8 +123,27 @@ def login():
 # ================= LOGOUT =================
 @app.route("/logout")
 def logout():
-
     session.clear()
+    return redirect("/login")
+
+
+# ================= HOME =================
+@app.route("/")
+def home():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
+
+    user_type = session.get("user_type")
+
+    if user_type == "Admin":
+        return redirect("/admin-dashboard")
+
+    if user_type == "Faculty":
+        return redirect("/faculty-dashboard")
+
+    if user_type == "Student":
+        return redirect("/student-dashboard")
 
     return redirect("/login")
 
@@ -229,7 +228,6 @@ def student_dashboard():
     """, (student_id,))
 
     student = cursor.fetchone()
-
     conn.close()
 
     if not student:
@@ -277,9 +275,376 @@ def change_password():
             conn.close()
             return redirect("/login")
 
-        password_hash = student[0]
-
-        if not password_hash or not check_password_hash(
-            password_hash,
-            current_password
+        if not student[0] or not check_password_hash(
+            student[0], current_password
         ):
+            conn.close()
+            return render_template(
+                "change_password.html",
+                error="Current password is incorrect."
+            )
+
+        if not is_strong_password(new_password):
+            conn.close()
+            return render_template(
+                "change_password.html",
+                error="Password must have at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character."
+            )
+
+        if new_password != confirm_password:
+            conn.close()
+            return render_template(
+                "change_password.html",
+                error="New password and Confirm Password do not match."
+            )
+
+        new_hash = generate_password_hash(new_password)
+
+        cursor.execute("""
+            UPDATE students
+            SET password_hash=?
+            WHERE id=?
+        """, (new_hash, student_id))
+
+        conn.commit()
+        conn.close()
+
+        return render_template(
+            "change_password.html",
+            success="Password changed successfully."
+        )
+
+    return render_template("change_password.html")
+
+
+# ================= STUDENT PROFILE =================
+@app.route("/student-profile")
+def student_profile():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") != "Student":
+        return redirect("/login")
+
+    student_id = session.get("student_id")
+
+    init_db()
+
+    conn = sqlite3.connect("college.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, name, roll_no, course, email
+        FROM students
+        WHERE id=?
+    """, (student_id,))
+
+    student = cursor.fetchone()
+    conn.close()
+
+    if not student:
+        return redirect("/login")
+
+    return render_template(
+        "student_profile.html",
+        student=student
+    )
+
+
+# ================= STUDENTS =================
+@app.route("/students")
+def students():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") != "Admin":
+        return redirect("/login")
+
+    init_db()
+
+    conn = sqlite3.connect("college.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, name, roll_no, course, email
+        FROM students
+        ORDER BY roll_no ASC
+    """)
+
+    students = cursor.fetchall()
+    conn.close()
+
+    return render_template(
+        "students.html",
+        students=students
+    )
+
+
+# ================= ADD STUDENT =================
+@app.route("/add-student", methods=["GET", "POST"])
+def add_student():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") != "Admin":
+        return redirect("/login")
+
+    init_db()
+
+    if request.method == "POST":
+
+        name = request.form["name"].strip()
+        roll_no = request.form["roll_no"].strip()
+        course = request.form["course"]
+        email = request.form["email"].strip()
+
+        password = request.form["password"]
+        confirm_password = request.form["confirm_password"]
+
+        if not is_strong_password(password):
+            return render_template(
+                "add_student.html",
+                error="Password must have 8 characters, uppercase, lowercase, number and special character."
+            )
+
+        if password != confirm_password:
+            return render_template(
+                "add_student.html",
+                error="Password and Confirm Password do not match."
+            )
+
+        conn = sqlite3.connect("college.db")
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "SELECT id FROM students WHERE roll_no=?",
+            (roll_no,)
+        )
+
+        if cursor.fetchone():
+            conn.close()
+            return render_template(
+                "add_student.html",
+                error="This Enrollment Number already exists."
+            )
+
+        password_hash = generate_password_hash(password)
+
+        cursor.execute("""
+            INSERT INTO students
+            (name, roll_no, course, email, password_hash)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            name,
+            roll_no,
+            course,
+            email,
+            password_hash
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/students")
+
+    return render_template("add_student.html")
+
+
+# ================= EDIT STUDENT =================
+@app.route("/edit-student/<int:id>", methods=["GET", "POST"])
+def edit_student(id):
+
+    if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") != "Admin":
+        return redirect("/login")
+
+    init_db()
+
+    conn = sqlite3.connect("college.db")
+    cursor = conn.cursor()
+
+    if request.method == "POST":
+
+        name = request.form["name"].strip()
+        roll_no = request.form["roll_no"].strip()
+        course = request.form["course"]
+        email = request.form["email"].strip()
+
+        new_password = request.form.get("password", "").strip()
+        confirm_password = request.form.get(
+            "confirm_password", ""
+        ).strip()
+
+        if new_password:
+
+            if not is_strong_password(new_password):
+                conn.close()
+                return render_template(
+                    "edit_student.html",
+                    student=(id, name, roll_no, course, email),
+                    error="Password must have 8 characters, uppercase, lowercase, number and special character."
+                )
+
+            if new_password != confirm_password:
+                conn.close()
+                return render_template(
+                    "edit_student.html",
+                    student=(id, name, roll_no, course, email),
+                    error="Password and Confirm Password do not match."
+                )
+
+            password_hash = generate_password_hash(new_password)
+
+            cursor.execute("""
+                UPDATE students
+                SET name=?, roll_no=?, course=?, email=?, password_hash=?
+                WHERE id=?
+            """, (
+                name,
+                roll_no,
+                course,
+                email,
+                password_hash,
+                id
+            ))
+
+        else:
+
+            cursor.execute("""
+                UPDATE students
+                SET name=?, roll_no=?, course=?, email=?
+                WHERE id=?
+            """, (
+                name,
+                roll_no,
+                course,
+                email,
+                id
+            ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/students")
+
+    cursor.execute("""
+        SELECT id, name, roll_no, course, email
+        FROM students
+        WHERE id=?
+    """, (id,))
+
+    student = cursor.fetchone()
+    conn.close()
+
+    return render_template(
+        "edit_student.html",
+        student=student
+    )
+
+
+# ================= DELETE STUDENT =================
+@app.route("/delete-student/<int:id>")
+def delete_student(id):
+
+    if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") != "Admin":
+        return redirect("/login")
+
+    init_db()
+
+    conn = sqlite3.connect("college.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM attendance WHERE student_id=?",
+        (id,)
+    )
+
+    cursor.execute(
+        "DELETE FROM students WHERE id=?",
+        (id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/students")
+
+
+# ================= FACULTY =================
+@app.route("/faculty")
+def faculty():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") != "Admin":
+        return redirect("/login")
+
+    init_db()
+
+    conn = sqlite3.connect("college.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM faculty
+        ORDER BY name ASC
+    """)
+
+    faculty = cursor.fetchall()
+    conn.close()
+
+    return render_template(
+        "faculty.html",
+        faculty=faculty
+    )
+
+
+# ================= ADD FACULTY =================
+@app.route("/add-faculty", methods=["GET", "POST"])
+def add_faculty():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") != "Admin":
+        return redirect("/login")
+
+    init_db()
+
+    if request.method == "POST":
+
+        name = request.form["name"].strip()
+        department = request.form["department"].strip()
+        email = request.form["email"].strip()
+
+        conn = sqlite3.connect("college.db")
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO faculty
+            (name, department, email)
+            VALUES (?, ?, ?)
+        """, (
+            name,
+            department,
+            email
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/faculty")
+
+    return render_template("add_faculty.html")
+
+
+# ================= COURSES
