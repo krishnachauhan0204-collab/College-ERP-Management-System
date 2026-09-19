@@ -2,7 +2,9 @@
 <html>
 <head>
     <title>Edit Student</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
@@ -13,12 +15,20 @@
 
         <p>
             <label>Student Name:</label><br>
-            <input type="text" name="name" value="{{ student[1] }}" required>
+
+            <input type="text"
+                   name="name"
+                   value="{{ student[1] }}"
+                   required>
         </p>
 
         <p>
             <label>Enrollment Number:</label><br>
-            <input type="text" value="{{ student[2] }}" disabled>
+
+            <input type="text"
+                   name="roll_no"
+                   value="{{ student[2] }}"
+                   required>
         </p>
 
         <p>
@@ -51,16 +61,24 @@
 
         <p>
             <label>Email:</label><br>
-            <input type="email" name="email" value="{{ student[4] }}" required>
+
+            <input type="email"
+                   name="email"
+                   value="{{ student[4] }}"
+                   required>
         </p>
 
-        <button type="submit">Update Student</button>
+        <button type="submit">
+            Update Student
+        </button>
 
     </form>
 
     <br>
 
-    <a href="/students">⬅ Back to Student Management</a>
+    <a href="/students">
+        ⬅ Back to Student Management
+    </a>
 
 </body>
 </html>
