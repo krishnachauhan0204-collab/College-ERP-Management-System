@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Student Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <h1>👨‍🎓 Student Dashboard</h1>
+
+    <p>Welcome to Student Portal</p>
+
+    <div class="dashboard">
+
+        <div class="card">
+            <h2>👤 My Profile</h2>
+            <p>View Student Profile</p>
+        </div>
+
+        <div class="card">
+            <h2>📊 My Attendance</h2>
+            <p>View Attendance</p>
+        </div>
+
+        <div class="card">
+            <h2>💰 My Fees</h2>
+            <p>View Fees Status</p>
+        </div>
+
+        <div class="card">
+            <h2>📚 My Courses</h2>
+            <p>View Course Information</p>
+        </div>
+
+        <div class="card">
+            <h2>📢 Notices</h2>
+            <p>View College Notices</p>
+        </div>
+
+    </div>
+
+    <br><br>
+
+    <a href="/logout">
+        <button>🚪 Logout</button>
+    </a>
+
+</body>
+
+</html>
