@@ -1,54 +1,140 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>Student Dashboard</title>
+    <title>Student Dashboard - College ERP</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f6fc;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background: #1f4e79;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 30px auto;
+        }
+
+        .welcome {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            text-align: center;
+        }
+
+        .welcome h2 {
+            color: #1f4e79;
+        }
+
+        .info {
+            margin-top: 25px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+        }
+
+        .info p {
+            font-size: 17px;
+            margin: 15px 0;
+        }
+
+        .buttons {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 20px;
+            margin: 8px;
+            background: #1f4e79;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .button:hover {
+            background: #163a5c;
+        }
+
+        .logout {
+            background: #c0392b;
+        }
+
+        .logout:hover {
+            background: #922b21;
+        }
+    </style>
 </head>
 
 <body>
 
-    <h1>👨‍🎓 Student Dashboard</h1>
+    <div class="header">
+        <h1>College ERP Management System</h1>
+        <p>Student Dashboard</p>
+    </div>
 
-    <p>Welcome to Student Portal</p>
+    <div class="container">
 
-    <div class="dashboard">
-
-        <div class="card">
-            <h2>👤 My Profile</h2>
-            <p>View Student Profile</p>
+        <div class="welcome">
+            <h2>Welcome, {{ student[1] }} 👋</h2>
+            <p>Welcome to your Student Dashboard</p>
         </div>
 
-        <div class="card">
-            <h2>📊 My Attendance</h2>
-            <p>View Attendance</p>
+        <div class="info">
+
+            <h2>Student Information</h2>
+
+            <p>
+                <strong>Name:</strong>
+                {{ student[1] }}
+            </p>
+
+            <p>
+                <strong>Enrollment Number:</strong>
+                {{ student[2] }}
+            </p>
+
+            <p>
+                <strong>Course:</strong>
+                {{ student[3] }}
+            </p>
+
+            <p>
+                <strong>Email:</strong>
+                {{ student[4] }}
+            </p>
+
         </div>
 
-        <div class="card">
-            <h2>💰 My Fees</h2>
-            <p>View Fees Status</p>
-        </div>
+        <div class="buttons">
 
-        <div class="card">
-            <h2>📚 My Courses</h2>
-            <p>View Course Information</p>
-        </div>
+            <a href="/student-profile" class="button">
+                👤 Student Profile
+            </a>
 
-        <div class="card">
-            <h2>📢 Notices</h2>
-            <p>View College Notices</p>
+            <a href="/change-password" class="button">
+                🔐 Change Password
+            </a>
+
+            <a href="/logout" class="button logout">
+                🚪 Logout
+            </a>
+
         </div>
 
     </div>
 
-    <br><br>
-
-    <a href="/logout">
-        <button>🚪 Logout</button>
-    </a>
-
 </body>
-
 </html>
