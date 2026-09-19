@@ -2,7 +2,8 @@
 <html>
 <head>
     <title>Add Student</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
@@ -13,38 +14,68 @@
 
         <p>
             <label>Student Name:</label><br>
-            <input type="text" name="name" required>
+            <input type="text"
+                   name="name"
+                   placeholder="Enter Student Name"
+                   required>
         </p>
 
         <p>
             <label>Enrollment Number:</label><br>
-            <input type="text" value="Automatic (ENR001, ENR002...)" disabled>
+            <input type="text"
+                   name="roll_no"
+                   placeholder="Enter Enrollment Number"
+                   required>
         </p>
 
         <p>
             <label>Course / Branch:</label><br>
 
             <select name="course" required>
-                <option value="">-- Select Course / Branch --</option>
-                <option value="Computer Engineering">Computer Engineering</option>
-                <option value="Information Technology">Information Technology</option>
-                <option value="Electrical Engineering">Electrical Engineering</option>
-                <option value="Mechanical Engineering">Mechanical Engineering</option>
+
+                <option value="">
+                    -- Select Course / Branch --
+                </option>
+
+                <option value="Computer Engineering">
+                    Computer Engineering
+                </option>
+
+                <option value="Information Technology">
+                    Information Technology
+                </option>
+
+                <option value="Electrical Engineering">
+                    Electrical Engineering
+                </option>
+
+                <option value="Mechanical Engineering">
+                    Mechanical Engineering
+                </option>
+
             </select>
         </p>
 
         <p>
             <label>Email:</label><br>
-            <input type="email" name="email" required>
+
+            <input type="email"
+                   name="email"
+                   placeholder="Enter Email"
+                   required>
         </p>
 
-        <button type="submit">Add Student</button>
+        <button type="submit">
+            Add Student
+        </button>
 
     </form>
 
     <br>
 
-    <a href="/students">⬅ Back to Student Management</a>
+    <a href="/students">
+        ⬅ Back to Student Management
+    </a>
 
 </body>
 </html>
