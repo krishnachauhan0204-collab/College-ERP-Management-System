@@ -1,69 +1,143 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>College ERP Login</title>
+    <title>Login - College ERP</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f6fc;
+            margin: 0;
+            padding: 0;
+        }
+
+        .login-box {
+            width: 380px;
+            margin: 80px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        h1 {
+            color: #1f4e79;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #555;
+            font-size: 20px;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        button {
+            width: 96%;
+            padding: 12px;
+            margin-top: 15px;
+            background: #1f4e79;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #163a5c;
+        }
+
+        .error {
+            color: red;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .info {
+            margin-top: 25px;
+            padding: 15px;
+            background: #f7f9fc;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .info h3 {
+            color: #1f4e79;
+            margin-top: 0;
+        }
+    </style>
 </head>
 
 <body>
 
-    <h1>College ERP Management System</h1>
+    <div class="login-box">
 
-    <h2>🔐 Login</h2>
+        <h1>College ERP</h1>
+        <h2>Login</h2>
 
-    <form method="POST">
+        {% if error %}
+            <div class="error">
+                {{ error }}
+            </div>
+        {% endif %}
 
-        <p>
-            <label>Username:</label><br>
+        <form method="POST">
 
-            <input type="text"
-                   name="username"
-                   placeholder="Enter Username"
-                   required>
-        </p>
+            <input
+                type="text"
+                name="username"
+                placeholder="Enrollment Number / Username"
+                required
+            >
 
-        <p>
-            <label>Password:</label><br>
+            <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                required
+            >
 
-            <input type="password"
-                   name="password"
-                   placeholder="Enter Password"
-                   required>
-        </p>
+            <button type="submit">
+                Login
+            </button>
 
-        <button type="submit">
-            Login
-        </button>
+        </form>
 
-    </form>
+        <div class="info">
 
-    {% if error %}
+            <h3>Login Information</h3>
 
-        <p style="color: red;">
-            {{ error }}
-        </p>
+            <b>Admin:</b><br>
+            Username: admin<br>
+            Password: admin123
 
-    {% endif %}
+            <br><br>
 
-    <br>
+            <b>Faculty:</b><br>
+            Username: faculty<br>
+            Password: faculty123
 
-    <p><b>Demo Login</b></p>
+            <br><br>
 
-    <p>
-        Admin: admin / admin123
-    </p>
+            <b>Student:</b><br>
+            Username: Your Enrollment Number<br>
+            Password: Your Student Password
 
-    <p>
-        Faculty: faculty / faculty123
-    </p>
+        </div>
 
-    <p>
-        Student: student / student123
-    </p>
+    </div>
 
 </body>
-
 </html>
