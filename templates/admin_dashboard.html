@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Admin Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <h1>👨‍💼 Admin Dashboard</h1>
+
+    <p>Welcome to College ERP Management System</p>
+
+    <p>
+        <b>Total Students:</b> {{ total_students }}
+        &nbsp;&nbsp;&nbsp;
+        <b>Total Faculty:</b> {{ total_faculty }}
+    </p>
+
+    <div class="dashboard">
+
+        <a href="/students"
+           style="text-decoration:none; color:inherit;">
+            <div class="card">
+                <h2>👨‍🎓 Students</h2>
+                <p>Manage Students</p>
+                <h2>{{ total_students }}</h2>
+            </div>
+        </a>
+
+        <a href="/faculty"
+           style="text-decoration:none; color:inherit;">
+            <div class="card">
+                <h2>👨‍🏫 Faculty</h2>
+                <p>Manage Faculty</p>
+                <h2>{{ total_faculty }}</h2>
+            </div>
+        </a>
+
+        <a href="/courses"
+           style="text-decoration:none; color:inherit;">
+            <div class="card">
+                <h2>📚 Courses</h2>
+                <p>Manage Courses</p>
+            </div>
+        </a>
+
+        <a href="/attendance"
+           style="text-decoration:none; color:inherit;">
+            <div class="card">
+                <h2>📊 Attendance</h2>
+                <p>Manage Attendance</p>
+            </div>
+        </a>
+
+        <a href="/fees"
+           style="text-decoration:none; color:inherit;">
+            <div class="card">
+                <h2>💰 Fees</h2>
+                <p>Manage Fees</p>
+            </div>
+        </a>
+
+        <a href="/reports"
+           style="text-decoration:none; color:inherit;">
+            <div class="card">
+                <h2>📄 Reports</h2>
+                <p>View Reports</p>
+            </div>
+        </a>
+
+    </div>
+
+    <br><br>
+
+    <a href="/logout">
+        <button>🚪 Logout</button>
+    </a>
+
+</body>
+
+</html>
