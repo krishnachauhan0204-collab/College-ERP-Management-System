@@ -566,8 +566,14 @@ def edit_student(id):
 
                 conn.close()
 
-                return render_template(
-                    "edit_student.html",
-                    student=(
-                        id,
-                        name,
+              return render_template(
+    "edit_student.html",
+    student=(
+        id,
+        name,
+        roll_no,
+        course,
+        email
+    ),
+    error="Password must have at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character."
+)
