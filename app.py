@@ -4,7 +4,6 @@ from datetime import date
 
 app = Flask(__name__)
 
-# Login session માટે secret key
 app.secret_key = "college_erp_secret_key"
 
 
@@ -54,29 +53,26 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        # Admin Login
         if username == "admin" and password == "admin123":
 
             session["logged_in"] = True
             session["user_type"] = "Admin"
 
-            return redirect("/")
+            return redirect("/admin-dashboard")
 
-        # Faculty Login
         elif username == "faculty" and password == "faculty123":
 
             session["logged_in"] = True
             session["user_type"] = "Faculty"
 
-            return redirect("/")
+            return redirect("/faculty-dashboard")
 
-        # Student Login
         elif username == "student" and password == "student123":
 
             session["logged_in"] = True
             session["user_type"] = "Student"
 
-            return redirect("/")
+            return redirect("/student-dashboard")
 
         else:
 
@@ -97,11 +93,14 @@ def logout():
     return redirect("/login")
 
 
-# ================= DASHBOARD =================
-@app.route("/")
-def home():
+# ================= ADMIN DASHBOARD =================
+@app.route("/admin-dashboard")
+def admin_dashboard():
 
     if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") != "Admin":
         return redirect("/login")
 
     init_db()
@@ -118,11 +117,72 @@ def home():
     conn.close()
 
     return render_template(
-        "index.html",
+        "admin_dashboard.html",
         total_students=total_students,
-        total_faculty=total_faculty,
-        user_type=session.get("user_type")
+        total_faculty=total_faculty
     )
+
+
+# ================= FACULTY DASHBOARD =================
+@app.route("/faculty-dashboard")
+def faculty_dashboard():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") != "Faculty":
+        return redirect("/login")
+
+    init_db()
+
+    conn = sqlite3.connect("college.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) FROM students")
+    total_students = cursor.fetchone()[0]
+
+    conn.close()
+
+    return render_template(
+        "faculty_dashboard.html",
+        total_students=total_students
+    )
+
+
+# ================= STUDENT DASHBOARD =================
+@app.route("/student-dashboard")
+def student_dashboard():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") != "Student":
+        return redirect("/login")
+
+    return render_template(
+        "student_dashboard.html"
+    )
+
+
+# ================= OLD DASHBOARD =================
+@app.route("/")
+def home():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
+
+    user_type = session.get("user_type")
+
+    if user_type == "Admin":
+        return redirect("/admin-dashboard")
+
+    elif user_type == "Faculty":
+        return redirect("/faculty-dashboard")
+
+    elif user_type == "Student":
+        return redirect("/student-dashboard")
+
+    return redirect("/login")
 
 
 # ================= STUDENTS =================
@@ -130,6 +190,9 @@ def home():
 def students():
 
     if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") != "Admin":
         return redirect("/login")
 
     init_db()
@@ -157,6 +220,9 @@ def students():
 def add_student():
 
     if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") != "Admin":
         return redirect("/login")
 
     init_db()
@@ -190,6 +256,9 @@ def add_student():
 def edit_student(id):
 
     if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") != "Admin":
         return redirect("/login")
 
     init_db()
@@ -237,6 +306,9 @@ def delete_student(id):
     if not session.get("logged_in"):
         return redirect("/login")
 
+    if session.get("user_type") != "Admin":
+        return redirect("/login")
+
     init_db()
 
     conn = sqlite3.connect("college.db")
@@ -265,6 +337,9 @@ def faculty():
     if not session.get("logged_in"):
         return redirect("/login")
 
+    if session.get("user_type") != "Admin":
+        return redirect("/login")
+
     init_db()
 
     conn = sqlite3.connect("college.db")
@@ -287,6 +362,9 @@ def faculty():
 def add_faculty():
 
     if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") != "Admin":
         return redirect("/login")
 
     init_db()
@@ -329,6 +407,9 @@ def courses():
 def attendance():
 
     if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") not in ["Admin", "Faculty"]:
         return redirect("/login")
 
     init_db()
@@ -461,6 +542,9 @@ def fees():
 def reports():
 
     if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") != "Admin":
         return redirect("/login")
 
     init_db()
