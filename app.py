@@ -1,8 +1,11 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session
 import sqlite3
 from datetime import date
 
 app = Flask(__name__)
+
+# Login session માટે secret key
+app.secret_key = "college_erp_secret_key"
 
 
 # ================= DATABASE =================
@@ -42,9 +45,65 @@ def init_db():
     conn.close()
 
 
+# ================= LOGIN =================
+@app.route("/login", methods=["GET", "POST"])
+def login():
+
+    if request.method == "POST":
+
+        username = request.form["username"]
+        password = request.form["password"]
+
+        # Admin Login
+        if username == "admin" and password == "admin123":
+
+            session["logged_in"] = True
+            session["user_type"] = "Admin"
+
+            return redirect("/")
+
+        # Faculty Login
+        elif username == "faculty" and password == "faculty123":
+
+            session["logged_in"] = True
+            session["user_type"] = "Faculty"
+
+            return redirect("/")
+
+        # Student Login
+        elif username == "student" and password == "student123":
+
+            session["logged_in"] = True
+            session["user_type"] = "Student"
+
+            return redirect("/")
+
+        else:
+
+            return render_template(
+                "login.html",
+                error="Invalid Username or Password"
+            )
+
+    return render_template("login.html")
+
+
+# ================= LOGOUT =================
+@app.route("/logout")
+def logout():
+
+    session.clear()
+
+    return redirect("/login")
+
+
 # ================= DASHBOARD =================
 @app.route("/")
 def home():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
+
     init_db()
 
     conn = sqlite3.connect("college.db")
@@ -61,19 +120,23 @@ def home():
     return render_template(
         "index.html",
         total_students=total_students,
-        total_faculty=total_faculty
+        total_faculty=total_faculty,
+        user_type=session.get("user_type")
     )
 
 
 # ================= STUDENTS =================
 @app.route("/students")
 def students():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
+
     init_db()
 
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
 
-    # Enrollment Number પ્રમાણે ascending order
     cursor.execute("""
         SELECT * FROM students
         ORDER BY roll_no ASC
@@ -92,6 +155,9 @@ def students():
 # ================= ADD STUDENT =================
 @app.route("/add-student", methods=["GET", "POST"])
 def add_student():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
 
     init_db()
 
@@ -122,6 +188,9 @@ def add_student():
 # ================= EDIT STUDENT =================
 @app.route("/edit-student/<int:id>", methods=["GET", "POST"])
 def edit_student(id):
+
+    if not session.get("logged_in"):
+        return redirect("/login")
 
     init_db()
 
@@ -165,6 +234,9 @@ def edit_student(id):
 @app.route("/delete-student/<int:id>")
 def delete_student(id):
 
+    if not session.get("logged_in"):
+        return redirect("/login")
+
     init_db()
 
     conn = sqlite3.connect("college.db")
@@ -190,12 +262,16 @@ def delete_student(id):
 @app.route("/faculty")
 def faculty():
 
+    if not session.get("logged_in"):
+        return redirect("/login")
+
     init_db()
 
     conn = sqlite3.connect("college.db")
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM faculty")
+
     faculty = cursor.fetchall()
 
     conn.close()
@@ -209,6 +285,9 @@ def faculty():
 # ================= ADD FACULTY =================
 @app.route("/add-faculty", methods=["GET", "POST"])
 def add_faculty():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
 
     init_db()
 
@@ -238,12 +317,19 @@ def add_faculty():
 # ================= COURSES =================
 @app.route("/courses")
 def courses():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
+
     return render_template("courses.html")
 
 
 # ================= ATTENDANCE =================
 @app.route("/attendance", methods=["GET", "POST"])
 def attendance():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
 
     init_db()
 
@@ -321,6 +407,9 @@ def attendance():
 @app.route("/attendance-report")
 def attendance_report():
 
+    if not session.get("logged_in"):
+        return redirect("/login")
+
     init_db()
 
     conn = sqlite3.connect("college.db")
@@ -360,12 +449,19 @@ def attendance_report():
 # ================= FEES =================
 @app.route("/fees")
 def fees():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
+
     return render_template("fees.html")
 
 
 # ================= REPORTS =================
 @app.route("/reports")
 def reports():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
 
     init_db()
 
