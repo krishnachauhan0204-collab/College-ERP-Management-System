@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Faculty Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <h1>👨‍🏫 Faculty Dashboard</h1>
+
+    <p>Welcome to Faculty Portal</p>
+
+    <div class="dashboard">
+
+        <a href="/attendance"
+           style="text-decoration:none; color:inherit;">
+            <div class="card">
+                <h2>📊 Attendance</h2>
+                <p>Mark Student Attendance</p>
+            </div>
+        </a>
+
+        <a href="/attendance-report"
+           style="text-decoration:none; color:inherit;">
+            <div class="card">
+                <h2>📄 Attendance Report</h2>
+                <p>View Attendance Records</p>
+            </div>
+        </a>
+
+        <div class="card">
+            <h2>👨‍🎓 My Students</h2>
+            <p>Total Students</p>
+            <h2>{{ total_students }}</h2>
+        </div>
+
+    </div>
+
+    <br><br>
+
+    <a href="/logout">
+        <button>🚪 Logout</button>
+    </a>
+
+</body>
+
+</html>
