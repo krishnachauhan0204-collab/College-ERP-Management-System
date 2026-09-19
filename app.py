@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, session
 import sqlite3
 from datetime import date
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
@@ -21,6 +22,16 @@ def init_db():
             email TEXT
         )
     """)
+
+    # Add password_hash column if it does not already exist
+    cursor.execute("PRAGMA table_info(students)")
+    columns = [column[1] for column in cursor.fetchall()]
+
+    if "password_hash" not in columns:
+        cursor.execute("""
+            ALTER TABLE students
+            ADD COLUMN password_hash TEXT
+        """)
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS faculty (
@@ -50,35 +61,62 @@ def login():
 
     if request.method == "POST":
 
-        username = request.form["username"]
+        username = request.form["username"].strip()
         password = request.form["password"]
 
+        # ================= ADMIN LOGIN =================
         if username == "admin" and password == "admin123":
+
+            session.clear()
 
             session["logged_in"] = True
             session["user_type"] = "Admin"
 
             return redirect("/admin-dashboard")
 
+        # ================= FACULTY LOGIN =================
         elif username == "faculty" and password == "faculty123":
+
+            session.clear()
 
             session["logged_in"] = True
             session["user_type"] = "Faculty"
 
             return redirect("/faculty-dashboard")
 
-        elif username == "student" and password == "student123":
-
-            session["logged_in"] = True
-            session["user_type"] = "Student"
-
-            return redirect("/student-dashboard")
-
+        # ================= STUDENT LOGIN =================
         else:
+
+            init_db()
+
+            conn = sqlite3.connect("college.db")
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT id, name, roll_no, course, email, password_hash
+                FROM students
+                WHERE roll_no=?
+            """, (username,))
+
+            student = cursor.fetchone()
+
+            conn.close()
+
+            if student and student[5]:
+
+                if check_password_hash(student[5], password):
+
+                    session.clear()
+
+                    session["logged_in"] = True
+                    session["user_type"] = "Student"
+                    session["student_id"] = student[0]
+
+                    return redirect("/student-dashboard")
 
             return render_template(
                 "login.html",
-                error="Invalid Username or Password"
+                error="Invalid Enrollment Number or Password"
             )
 
     return render_template("login.html")
@@ -159,8 +197,66 @@ def student_dashboard():
     if session.get("user_type") != "Student":
         return redirect("/login")
 
+    student_id = session.get("student_id")
+
+    init_db()
+
+    conn = sqlite3.connect("college.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, name, roll_no, course, email
+        FROM students
+        WHERE id=?
+    """, (student_id,))
+
+    student = cursor.fetchone()
+
+    conn.close()
+
+    if not student:
+        session.clear()
+        return redirect("/login")
+
     return render_template(
-        "student_dashboard.html"
+        "student_dashboard.html",
+        student=student
+    )
+
+
+# ================= STUDENT PROFILE =================
+@app.route("/student-profile")
+def student_profile():
+
+    if not session.get("logged_in"):
+        return redirect("/login")
+
+    if session.get("user_type") != "Student":
+        return redirect("/login")
+
+    student_id = session.get("student_id")
+
+    init_db()
+
+    conn = sqlite3.connect("college.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, name, roll_no, course, email
+        FROM students
+        WHERE id=?
+    """, (student_id,))
+
+    student = cursor.fetchone()
+
+    conn.close()
+
+    if not student:
+        return redirect("/login")
+
+    return render_template(
+        "student_profile.html",
+        student=student
     )
 
 
@@ -201,7 +297,8 @@ def students():
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT * FROM students
+        SELECT id, name, roll_no, course, email
+        FROM students
         ORDER BY roll_no ASC
     """)
 
@@ -233,15 +330,24 @@ def add_student():
         roll_no = request.form["roll_no"]
         course = request.form["course"]
         email = request.form["email"]
+        password = request.form["password"]
+
+        password_hash = generate_password_hash(password)
 
         conn = sqlite3.connect("college.db")
         cursor = conn.cursor()
 
         cursor.execute("""
             INSERT INTO students
-            (name, roll_no, course, email)
-            VALUES (?, ?, ?, ?)
-        """, (name, roll_no, course, email))
+            (name, roll_no, course, email, password_hash)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            name,
+            roll_no,
+            course,
+            email,
+            password_hash
+        ))
 
         conn.commit()
         conn.close()
@@ -273,21 +379,49 @@ def edit_student(id):
         course = request.form["course"]
         email = request.form["email"]
 
-        cursor.execute("""
-            UPDATE students
-            SET name=?, roll_no=?, course=?, email=?
-            WHERE id=?
-        """, (name, roll_no, course, email, id))
+        new_password = request.form.get("password", "").strip()
+
+        if new_password:
+
+            password_hash = generate_password_hash(new_password)
+
+            cursor.execute("""
+                UPDATE students
+                SET name=?, roll_no=?, course=?, email=?, password_hash=?
+                WHERE id=?
+            """, (
+                name,
+                roll_no,
+                course,
+                email,
+                password_hash,
+                id
+            ))
+
+        else:
+
+            cursor.execute("""
+                UPDATE students
+                SET name=?, roll_no=?, course=?, email=?
+                WHERE id=?
+            """, (
+                name,
+                roll_no,
+                course,
+                email,
+                id
+            ))
 
         conn.commit()
         conn.close()
 
         return redirect("/students")
 
-    cursor.execute(
-        "SELECT * FROM students WHERE id=?",
-        (id,)
-    )
+    cursor.execute("""
+        SELECT id, name, roll_no, course, email
+        FROM students
+        WHERE id=?
+    """, (id,))
 
     student = cursor.fetchone()
 
@@ -438,136 +572,3 @@ def attendance():
             status = request.form.get(
                 f"attendance_{student_id}"
             )
-
-            if status:
-
-                cursor.execute("""
-                    INSERT INTO attendance
-                    (student_id, attendance_date, status)
-                    VALUES (?, ?, ?)
-                """, (
-                    student_id,
-                    attendance_date,
-                    status
-                ))
-
-        conn.commit()
-        conn.close()
-
-        return redirect(
-            f"/attendance?branch={branch}"
-        )
-
-    if selected_branch:
-
-        cursor.execute("""
-            SELECT * FROM students
-            WHERE course=?
-            ORDER BY roll_no ASC
-        """, (selected_branch,))
-
-    else:
-
-        cursor.execute("""
-            SELECT * FROM students
-            ORDER BY roll_no ASC
-        """)
-
-    students = cursor.fetchall()
-
-    conn.close()
-
-    return render_template(
-        "attendance.html",
-        students=students,
-        selected_branch=selected_branch
-    )
-
-
-# ================= ATTENDANCE REPORT =================
-@app.route("/attendance-report")
-def attendance_report():
-
-    if not session.get("logged_in"):
-        return redirect("/login")
-
-    init_db()
-
-    conn = sqlite3.connect("college.db")
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        SELECT
-            students.id,
-            students.name,
-            students.roll_no,
-            students.course,
-            COUNT(attendance.id),
-            SUM(
-                CASE
-                    WHEN attendance.status='Present'
-                    THEN 1
-                    ELSE 0
-                END
-            )
-        FROM students
-        LEFT JOIN attendance
-        ON students.id = attendance.student_id
-        GROUP BY students.id
-        ORDER BY students.roll_no ASC
-    """)
-
-    records = cursor.fetchall()
-
-    conn.close()
-
-    return render_template(
-        "attendance_report.html",
-        records=records
-    )
-
-
-# ================= FEES =================
-@app.route("/fees")
-def fees():
-
-    if not session.get("logged_in"):
-        return redirect("/login")
-
-    return render_template("fees.html")
-
-
-# ================= REPORTS =================
-@app.route("/reports")
-def reports():
-
-    if not session.get("logged_in"):
-        return redirect("/login")
-
-    if session.get("user_type") != "Admin":
-        return redirect("/login")
-
-    init_db()
-
-    conn = sqlite3.connect("college.db")
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        SELECT * FROM students
-        ORDER BY roll_no ASC
-    """)
-
-    students = cursor.fetchall()
-
-    conn.close()
-
-    return render_template(
-        "reports.html",
-        students=students
-    )
-
-
-# ================= RUN =================
-if __name__ == "__main__":
-    init_db()
-    app.run(debug=True)
