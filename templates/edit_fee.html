@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Fee Record</title>
+</head>
+
+<body>
+
+    <h1>Edit Fee Record</h1>
+
+    <form method="POST" action="/edit-fee/{{ fee[0] }}">
+
+        <label>Student Name:</label><br>
+        <input type="text" name="student_name" value="{{ fee[1] }}" required>
+        <br><br>
+
+        <label>Enrollment Number:</label><br>
+        <input type="text" name="enrollment_no" value="{{ fee[2] }}" required>
+        <br><br>
+
+        <label>Course:</label><br>
+        <input type="text" name="course" value="{{ fee[3] }}" required>
+        <br><br>
+
+        <label>Total Fees:</label><br>
+        <input type="number" name="total_fees" value="{{ fee[4] }}" min="0" step="0.01" required>
+        <br><br>
+
+        <label>Paid Fees:</label><br>
+        <input type="number" name="paid_fees" value="{{ fee[5] }}" min="0" step="0.01" required>
+        <br><br>
+
+        <button type="submit">Update Fee Record</button>
+
+    </form>
+
+    <br>
+
+    <a href="/fees">Back to Fees Management</a>
+
+</body>
+</html>

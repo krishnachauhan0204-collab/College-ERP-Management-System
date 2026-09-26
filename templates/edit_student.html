@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Student</title>
+</head>
+
+<body>
+
+    <h1>Edit Student</h1>
+
+    <form method="POST" action="/edit-student/{{ student[0] }}">
+
+        <label>Student Name:</label><br>
+        <input type="text" name="name" value="{{ student[1] }}" required><br><br>
+
+        <label>Enrollment Number:</label><br>
+        <input type="text" name="roll_no" value="{{ student[2] }}" required><br><br>
+
+        <label>Course:</label><br>
+        <input type="text" name="course" value="{{ student[3] }}" required><br><br>
+
+        <label>Email:</label><br>
+        <input type="email" name="email" value="{{ student[4] }}" required><br><br>
+
+        <button type="submit">Update Student</button>
+
+    </form>
+
+    <br>
+
+    <a href="/students">Back to Student Management</a>
+
+</body>
+</html>

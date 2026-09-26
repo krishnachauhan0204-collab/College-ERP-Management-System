@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Management</title>
+</head>
+
+<body>
+
+    <h1>Attendance Management</h1>
+
+    <a href="/add-attendance">
+        <button type="button">Add Attendance</button>
+    </a>
+
+    <hr>
+
+    <h2>Attendance Records</h2>
+
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>ID</th>
+            <th>Student Name</th>
+            <th>Enrollment Number</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+
+        {% for attendance in attendances %}
+        <tr>
+            <td>{{ attendance[0] }}</td>
+            <td>{{ attendance[1] }}</td>
+            <td>{{ attendance[2] }}</td>
+            <td>{{ attendance[3] }}</td>
+            <td>{{ attendance[4] }}</td>
+
+            <td>
+                <a href="/edit-attendance/{{ attendance[0] }}">Edit</a>
+                |
+                <a href="/delete-attendance/{{ attendance[0] }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+
+    </table>
+
+    <br>
+
+    <a href="/">Back to Dashboard</a>
+
+</body>
+</html>

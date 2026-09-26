@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports</title>
+</head>
+
+<body>
+
+    <h1>College ERP Reports</h1>
+
+    <hr>
+
+    <h2>Overall Summary</h2>
+
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>Module</th>
+            <th>Total Records</th>
+        </tr>
+
+        <tr>
+            <td>Students</td>
+            <td>{{ total_students }}</td>
+        </tr>
+
+        <tr>
+            <td>Faculty</td>
+            <td>{{ total_faculty }}</td>
+        </tr>
+
+        <tr>
+            <td>Courses / Subjects</td>
+            <td>{{ total_courses }}</td>
+        </tr>
+
+        <tr>
+            <td>Attendance Records</td>
+            <td>{{ total_attendance }}</td>
+        </tr>
+
+        <tr>
+            <td>Fee Records</td>
+            <td>{{ total_fee_records }}</td>
+        </tr>
+    </table>
+
+    <br>
+
+    <h2>Fees Summary</h2>
+
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>Fee Type</th>
+            <th>Amount</th>
+        </tr>
+
+        <tr>
+            <td>Total Fees</td>
+            <td>₹{{ total_fees }}</td>
+        </tr>
+
+        <tr>
+            <td>Paid Fees</td>
+            <td>₹{{ paid_fees }}</td>
+        </tr>
+
+        <tr>
+            <td>Pending Fees</td>
+            <td>₹{{ pending_fees }}</td>
+        </tr>
+    </table>
+
+    <br>
+
+    <a href="/">Back to Dashboard</a>
+
+</body>
+</html>

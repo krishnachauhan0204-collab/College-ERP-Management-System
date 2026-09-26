@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Attendance</title>
+</head>
+
+<body>
+
+    <h1>Edit Attendance</h1>
+
+    <form method="POST" action="/edit-attendance/{{ attendance[0] }}">
+
+        <label>Student Name:</label><br>
+        <input type="text" name="student_name" value="{{ attendance[1] }}" required>
+        <br><br>
+
+        <label>Enrollment Number:</label><br>
+        <input type="text" name="enrollment_no" value="{{ attendance[2] }}" required>
+        <br><br>
+
+        <label>Date:</label><br>
+        <input type="date" name="date" value="{{ attendance[3] }}" required>
+        <br><br>
+
+        <label>Status:</label><br>
+
+        <select name="status" required>
+            <option value="Present" {% if attendance[4] == "Present" %}selected{% endif %}>Present</option>
+            <option value="Absent" {% if attendance[4] == "Absent" %}selected{% endif %}>Absent</option>
+        </select>
+
+        <br><br>
+
+        <button type="submit">Update Attendance</button>
+
+    </form>
+
+    <br>
+
+    <a href="/attendance">Back to Attendance</a>
+
+</body>
+</html>

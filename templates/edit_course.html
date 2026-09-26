@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Course / Subject</title>
+</head>
+
+<body>
+
+    <h1>Edit Course / Subject</h1>
+
+    <form method="POST" action="/edit-course/{{ course[0] }}">
+
+        <label>Department:</label><br>
+        <input type="text"
+               name="department"
+               value="{{ course[3] }}"
+               required>
+        <br><br>
+
+        <label>Course / Subject Name:</label><br>
+        <input type="text"
+               name="course_name"
+               value="{{ course[1] }}"
+               required>
+        <br><br>
+
+        <label>Course Code:</label><br>
+        <input type="text"
+               name="course_code"
+               value="{{ course[2] }}"
+               required>
+        <br><br>
+
+        <label>Semester:</label><br>
+        <input type="text"
+               name="semester"
+               value="{{ course[4] }}"
+               required>
+        <br><br>
+
+        <button type="submit">Update Course / Subject</button>
+
+    </form>
+
+    <br>
+
+    <a href="/courses">Back to Courses & Subjects</a>
+
+</body>
+</html>
